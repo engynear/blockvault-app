@@ -6,23 +6,22 @@
 <div class="sidenav">
     <a href="/">
         <div class="logo">
-        
-            <img src={logoPath} alt="Logo">
+            <img src={logoPath} alt="Logo" />
             <h3 class="brandname">
-                <div class="centered">
-                    BlockVault
-                </div>
+                <div class="centered">BlockVault</div>
             </h3>
         </div>
     </a>
-    <hr class="separator">
-    <a href="/models">3d модели</a>
-    <a href="/page2">Page 2</a>
-    <a href="/page3">Page 3</a>
+    <hr class="separator" />
+    <a href="/resourcepacks/models">3d модели</a>
+    <a href="/resourcepacks/sounds">Звуки</a>
+    <hr class="separator" />
+    <a href="/maps">Карты</a>
+    <a href="/resourcepacks">Ресурспаки</a>
 </div>
 
 <style lang="scss">
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap');
+    @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap");
     .sidenav {
         position: fixed;
         top: 0;
@@ -34,9 +33,9 @@
         background-color: #0e0f14;
         width: 20%;
         max-width: 300px;
-        z-index: 1;
+        z-index: 5;
     }
-    
+
     .separator {
         opacity: 0.1;
     }
@@ -52,7 +51,7 @@
         margin: 0;
         margin-left: 5px;
         color: white;
-        font-family: 'Montserrat', sans-serif;
+        font-family: "Montserrat", sans-serif;
         font-size: medium;
         text-align: center;
     }
@@ -67,5 +66,4 @@
     a:hover {
         background-color: transparent;
     }
-
 </style>

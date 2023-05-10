@@ -1,16 +1,16 @@
 <script>
-  import "../app.scss";
-  import SideBar from "$lib/SideBar.svelte";
+    import "../app.scss";
+    import SideBar from "$lib/SideBar.svelte";
 </script>
 
-<SideBar/>
+<SideBar />
 
 <div class="main">
-  <slot />
+    <slot />
 </div>
 
 <style>
-  .main {
-    margin-left: min(22%, 320px);
-  }
+    .main {
+        margin-left: min(22%, 320px);
+    }
 </style>

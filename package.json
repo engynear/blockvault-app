@@ -1,5 +1,5 @@
 {
-  "author": "anonymous",
+  "author": "engynear",
   "devDependencies": {
     "@sveltejs/adapter-node": "^1.0.0-next.101",
     "@sveltejs/adapter-static": "^1.0.0-next.48",
@@ -16,8 +16,11 @@
   "license": "",
   "private": true,
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.4.0",
+    "dotenv": "^16.0.3",
     "electron-serve": "^1.1.0",
-    "electron-window-state": "^5.0.3"
+    "electron-window-state": "^5.0.3",
+    "svelte-dropzone": "^1.0.6"
   },
   "main": "src/electron.cjs",
   "scripts": {
