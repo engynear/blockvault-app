@@ -1,12 +1,8 @@
 <script>
     import { onMount } from "svelte";
+    const apiURL = import.meta.env.VITE_API_URL;
 
-    export let id;
-    export let name;
-    export let previewImage;
-    export let modelType;
-    export let modelTags;
-
+    export let model;
     export let isSelected = false;
     export let handleSelection;
 
@@ -22,25 +18,27 @@
 
 <div class="card-container {isSelected ? 'selected' : ''}">
     <!-- svelte-ignore a11y-img-redundant-alt -->
-    <img
+    <div class="preview-image-container">
+        <img
         class="preview-image"
-        src={previewImage}
+        src={`${apiURL}/models/${model.id}/preview-image`}
         alt="Preview image"
         on:click={onCardClick}
         on:keypress={onCardClick}
-    />
+        />
+    </div>
     <div class="card-content">
         <div class="card-description">
-            <h2 class="card-title">{name}</h2>
-            {#if modelType}
+            <h2 class="card-title">{model.name}</h2>
+            {#if model.type}
                 <p class="card-type">
                     <span class="mdi mdi-file-outline" />
-                    {modelType}
+                    {model.type}
                 </p>
             {/if}
-            {#if modelTags}
+            {#if model.tags}
                 <div class="card-tags">
-                    {#each modelTags as tag}
+                    {#each model.tags as tag}
                         <span class="card-tag">{tag}</span>
                     {/each}
                 </div>
@@ -50,7 +48,7 @@
             type="checkbox"
             id="checkbox-input"
             bind:checked={isSelected}
-            on:change={handleSelection(id)}
+            on:change={handleSelection(model, isSelected)}
         />
     </div>
 </div>
@@ -141,9 +139,20 @@
         margin-left: auto;
     }
 
-    .preview-image {
+    .preview-image-container {
         width: 100%;
         aspect-ratio: 1/1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        overflow: hidden;
+        background-color: #ccc;
+    }
+
+    .preview-image {
+        max-width: 100%;
+        max-height: 100%;
         object-fit: cover;
         border-radius: 10px;
 

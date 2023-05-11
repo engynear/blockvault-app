@@ -1,14 +1,29 @@
 <script>
     import ModelCard from "$lib/resource-cards/ModelCard.svelte";
     import AddModelModal from "$lib/modals/AddModelModal.svelte";
-    import { onMount } from "svelte";
+    import { onMount, onDestroy } from "svelte";
+    import { selectedModels } from "$lib/store.js";
 
     const apiURL = import.meta.env.VITE_API_URL;
-
     let models = [];
+    let unsubscribeSelectedModels;
+    let searchValue = "";
+    let filteredModels = [];
+    let isAddingModel = false;
 
     onMount(async () => {
         await loadModels();
+        // Подписываемся на selectedModels store и загружаем начальное значение
+        unsubscribeSelectedModels = selectedModels.subscribe((value) => {
+            selectedModelsValue = value;
+        });
+    });
+
+    onDestroy(() => {
+        // Отменяем подписку при размонтировании компонента
+        if (unsubscribeSelectedModels) {
+            unsubscribeSelectedModels();
+        }
     });
 
     const loadModels = async () => {
@@ -16,9 +31,23 @@
         response.json().then((data) => {
             models = data;
         });
+
+        if (!response.ok) {
+            console.error("Ошибка при загрузке моделей");
+            return;
+        }
     };
 
-    let isAddingModel = false;
+    $: {
+        if (searchValue === "") {
+            filteredModels = models;
+        } else {
+            filteredModels = models.filter((model) =>
+                model.name.toLowerCase().includes(searchValue.toLowerCase())
+            );
+        }
+    }
+
     async function handleAddModel(modelData, projectFile, previewImage) {
         const addModel = await fetch(`${apiURL}/models`, {
             method: "POST",
@@ -67,6 +96,18 @@
         models = models;
         isAddingModel = false;
     }
+
+    let selectedModelsValue = [];
+    function handleSelection(model, isSelected) {
+        if (isSelected) {
+            selectedModelsValue.push(model);
+        } else {
+            selectedModelsValue = selectedModelsValue.filter(
+                (m) => m.id !== model.id
+            );
+        }
+        selectedModels.set(selectedModelsValue);
+    }
 </script>
 
 <svelte:head>
@@ -75,23 +116,34 @@
 
 <header>
     <h1 class="page-title">3D Модели</h1>
+    <input
+        type="text"
+        placeholder="Поиск по названию"
+        bind:value={searchValue}
+        class="search-input"
+    />
     <button class="button-add-model" on:click={() => (isAddingModel = true)}>
         Добавить
     </button>
 </header>
 
-<div class="models-grid">
-    {#each models as model}
-        <ModelCard
-            id={model.id}
-            name={model.name}
-            previewImage={`${apiURL}/models/${model.id}/preview-image`}
-            modelType={model.type}
-            modelTags={model.tags}
-            handleSelection={(event) => console.log(event)}
-        />
-    {/each}
-</div>
+{#if filteredModels.length === 0}
+    <div class="no-models">
+        <p>Нет найдено моделей</p>
+        <i class="fa fa-exclamation-circle"></i>
+    </div>
+{:else}
+    <div class="models-grid">
+        {#each filteredModels as model}
+            <ModelCard
+                {model}
+                isSelected={selectedModelsValue.some((m) => m.id === model.id)}
+                handleSelection={(model, isSelected) =>
+                    handleSelection(model, isSelected)}
+            />
+        {/each}
+    </div>
+{/if}
 
 <AddModelModal
     isOpen={isAddingModel}
@@ -132,6 +184,32 @@
         margin-bottom: 20px;
         font-family: Montserrat;
         text-align: center;
+    }
+
+    .search-input {
+        margin-left: auto;
+        margin-right: 10px;
+        padding: 5px;
+        font-size: 1rem;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+    }
+
+    .no-models {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 200px;
+        font-family: Montserrat;
+        font-size: 1rem;
+        color: #555;
+    }
+
+    .no-models i {
+        margin-top: 10px;
+        font-size: 2rem;
+        color: #ccc;
     }
 
     .models-grid {

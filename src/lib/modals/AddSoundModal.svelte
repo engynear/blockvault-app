@@ -4,24 +4,20 @@
     export let onClose;
 
     let name = "";
-    let type = "";
     let description = "";
     let tags = "";
-    let projectFile = null;
-    let previewImage = null;
-    let previewImageUrl = null;
+    let soundFile = null;
 
     function handleSubmit(event) {
         event.preventDefault();
 
-        const newModel = {
+        const newSound = {
             name,
-            type,
             description,
             tags: tags.split(",").map((tag) => tag.trim()),
         };
 
-        onSubmit(newModel, projectFile, previewImage);
+        onSubmit(newSound, soundFile);
         handleClose();
     }
 
@@ -29,26 +25,15 @@
         onClose();
         isOpen = false;
         name = "";
-        type = "";
         description = "";
         tags = "";
-        projectFile = null;
-        previewImage = null;
-        previewImageUrl = null;
+        soundFile = null;
     }
 
-    function handleProjectFileChange(event) {
+    function handleSoundFileChange(event) {
         const file = event.target.files[0];
         if (file) {
-            projectFile = file;
-        }
-    }
-
-    function handlePreviewImageChange(event) {
-        const file = event.target.files[0];
-        if (file) {
-            previewImage = file;
-            previewImageUrl = URL.createObjectURL(file);
+            soundFile = file;
         }
     }
 </script>
@@ -69,28 +54,13 @@
                 <input type="text" bind:value={tags} />
             </label>
             <label>
-                Файл проекта (.bbmodel):
+                Файл звука (.wav):
                 <input
                     type="file"
-                    accept=".bbmodel"
-                    on:change={handleProjectFileChange}
+                    accept=".wav"
+                    on:change={handleSoundFileChange}
                 />
             </label>
-            <label>
-                Картинка-превью (.png):
-                <input
-                    type="file"
-                    accept="image/png"
-                    on:change={handlePreviewImageChange}
-                />
-            </label>
-            {#if previewImageUrl}
-            <img
-            src={previewImageUrl}
-            alt="Preview"
-            class="preview-image"
-        />
-            {/if}
             <button type="submit">Добавить</button>
         </form>
         <button class="close-modal" on:click={handleClose}>
@@ -109,7 +79,6 @@
         z-index: 1000;
         width: 50%;
         max-width: 900px; // Уменьшаем максимальную ширину до 900px
-        max-height: 90vh; // Используем относительное значение для максимальной высоты
         background-color: white;
         border-radius: 10px;
         padding: 20px;
@@ -170,14 +139,5 @@
         height: 100%;
         background-color: rgba(0, 0, 0, 0.25);
         backdrop-filter: blur(5px);
-    }
-
-    .preview-image {
-        width: 100%;
-        max-width: 300px;
-        height: auto;
-        margin: 0 auto;
-        display: block;
-        border-radius: 4px;
     }
 </style>
