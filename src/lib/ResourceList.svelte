@@ -1,56 +1,63 @@
 <script>
     import { onMount, onDestroy } from "svelte";
     import { selectedModels, selectedSounds } from "$lib/store.js";
-
+  
     let selectedModelsValue = [];
     let selectedSoundsValue = [];
-
+  
     const apiURL = import.meta.env.VITE_API_URL;
-
+  
     let unsubscribeModels;
     let unsubscribeSounds;
-
+  
     onMount(() => {
-        unsubscribeModels = selectedModels.subscribe((value) => {
-            selectedModelsValue = value.map((model) => ({
-                ...model,
-                previewImage: `${apiURL}/models/${model.id}/preview-image`,
-            }));
-        });
-
-        unsubscribeSounds = selectedSounds.subscribe((value) => {
-            selectedSoundsValue = value;
-        });
-
-        console.log("ResourceList mounted");
+      unsubscribeModels = selectedModels.subscribe((value) => {
+        selectedModelsValue = value.map((model) => ({
+          ...model,
+          previewImage: `${apiURL}/models/${model.id}/preview-image`,
+        }));
+      });
+  
+      unsubscribeSounds = selectedSounds.subscribe((value) => {
+        selectedSoundsValue = value;
+      });
+  
+      console.log("ResourceList mounted");
     });
-
+  
     onDestroy(() => {
-        if (unsubscribeModels) {
-            unsubscribeModels();
-        }
-
-        if (unsubscribeSounds) {
-            unsubscribeSounds();
-        }
+      if (unsubscribeModels) {
+        unsubscribeModels();
+      }
+  
+      if (unsubscribeSounds) {
+        unsubscribeSounds();
+      }
     });
-
+  
     function handleCreateResourcepack() {
-        window.location.href = "/resourcepacks/create";
+      const modelData = JSON.stringify(selectedModelsValue);
+      const soundData = JSON.stringify(selectedSoundsValue);
+      const queryParams = new URLSearchParams({
+        models: modelData,
+        sounds: soundData,
+      }).toString();
+  
+      window.location.href = `/resourcepacks/new?${queryParams}`;
     }
-
+  
     function removeModel(model) {
-        selectedModels.update((models) => {
-            return models.filter((m) => m.id !== model.id);
-        });
+      selectedModels.update((models) => {
+        return models.filter((m) => m.id !== model.id);
+      });
     }
-
+  
     function removeSound(sound) {
-        selectedSounds.update((sounds) => {
-            return sounds.filter((s) => s.id !== sound.id);
-        });
+      selectedSounds.update((sounds) => {
+        return sounds.filter((s) => s.id !== sound.id);
+      });
     }
-</script>
+  </script>
 
 <div class="resources-list">
     {#if selectedModelsValue.length > 0}

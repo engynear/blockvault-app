@@ -54,10 +54,10 @@
                 <input type="text" bind:value={tags} />
             </label>
             <label>
-                Файл звука (.wav):
+                Файл звука (.ogg):
                 <input
                     type="file"
-                    accept=".wav"
+                    accept=".ogg"
                     on:change={handleSoundFileChange}
                 />
             </label>

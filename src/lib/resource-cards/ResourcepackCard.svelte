@@ -2,12 +2,12 @@
     import { onMount } from "svelte";
     const apiURL = import.meta.env.VITE_API_URL;
 
-    export let model;
+    export let resourcepack;
     export let isSelected = false;
     export let handleSelection;
 
     function onCardClick() {
-        window.location.href = `/models/${id}`;
+        window.location.href = `/resourcepacks/${resourcepack.id}`;
     }
 </script>
 
@@ -21,7 +21,7 @@
     <div class="preview-image-container">
         <img
             class="preview-image"
-            src={`${apiURL}/models/${model.id}/preview-image`}
+            src={`${apiURL}/resourcepacks/${resourcepack.id}/preview-image`}
             alt="Preview image"
             on:click={onCardClick}
             on:keypress={onCardClick}
@@ -29,38 +29,29 @@
     </div>
     <div class="card-content">
         <div class="card-description">
-            <h2 class="card-title">{model.name}</h2>
-            {#if model.type}
-                <p class="card-type">
-                    <span class="mdi mdi-file-outline" />
-                    {model.type}
-                </p>
-            {/if}
-            {#if model.tags}
-                <div class="card-tags">
-                    {#each model.tags as tag}
-                        <span class="card-tag">{tag}</span>
-                    {/each}
-                </div>
+            <h2 class="card-title">{resourcepack.name}</h2>
+            <p class="card-version">{resourcepack.version}</p>
+            {#if resourcepack.description}
+                <p class="card-description-text">{resourcepack.description}</p>
             {/if}
         </div>
         <input
             type="checkbox"
             id="checkbox-input"
             bind:checked={isSelected}
-            on:change={handleSelection(model, isSelected)}
+            on:change={handleSelection(resourcepack, isSelected)}
         />
     </div>
 </div>
 
 <style lang="scss">
+    /* Стили для карточки ресурс-пака */
+
     .card-container {
         border-radius: 10px;
         margin: 0;
-
         background-color: #fff;
         transition: background-color 0.3s ease;
-
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -68,7 +59,6 @@
     }
 
     .card-container.selected {
-        // border: #4d6163 2px solid;
         outline-color: #4d6163;
         outline-width: 2px;
         outline-style: solid;
@@ -99,12 +89,6 @@
         width: 100%;
     }
 
-    .card-type {
-        margin-top: 0;
-        margin-bottom: 0;
-        color: #4d6163;
-    }
-
     .card-title {
         font-size: 1rem;
         font-weight: bold;
@@ -112,21 +96,16 @@
         margin-top: 0;
     }
 
-    .card-tags {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 5px;
+    .card-version {
+        font-size: 14px;
+        color: #777;
+        margin-bottom: 0;
     }
 
-    .card-tag {
-        font-size: 0.8rem;
+    .card-description-text {
+        font-size: 14px;
+        line-height: 1.5;
         margin-bottom: 0;
-        margin-top: 0;
-        background-color: #ffc087;
-        border-radius: 5px;
-        padding: 2px;
-        text-align: center;
     }
 
     #checkbox-input {

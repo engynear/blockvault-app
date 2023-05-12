@@ -108,6 +108,49 @@
         }
         selectedModels.set(selectedModelsValue);
     }
+
+    let isPanelVisible = false;
+
+    const downloadAllModels = async () => {
+        const downloadPromises = selectedModelsValue.map(async (model) => {
+            const response = await fetch(`${apiURL}/models/${model.id}/project`);
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = downloadUrl;
+            link.download = `${model.name}.bbmodel`;
+            link.click();
+            window.URL.revokeObjectURL(downloadUrl);
+        });
+
+        await Promise.all(downloadPromises);
+    };
+
+    const cancelSelection = () => {
+        selectedModelsValue = [];
+        selectedModels.set(selectedModelsValue);
+    };
+
+    const deleteAllModels = async () => {
+        const deletePromises = selectedModelsValue.map(async (model) => {
+            const response = await fetch(`${apiURL}/models/${model.id}`, {
+                method: "DELETE"
+            });
+
+            if (!response.ok) {
+                console.error(`Error deleting model with ID ${model.id}`);
+            }
+        });
+
+        await Promise.all(deletePromises);
+        models = models.filter((model) => !selectedModelsValue.includes(model));
+        selectedModelsValue = [];
+        selectedModels.set(selectedModelsValue);
+    };
+
+    $: {
+        isPanelVisible = selectedModelsValue.length > 0;
+    }
 </script>
 
 <svelte:head>
@@ -142,6 +185,20 @@
                     handleSelection(model, isSelected)}
             />
         {/each}
+    </div>
+{/if}
+
+{#if isPanelVisible}
+    <div class="panel">
+        <button class="panel-button" on:click={downloadAllModels}>
+            <i class="fas fa-download"></i> Скачать все модели
+        </button>
+        <button class="panel-button" on:click={cancelSelection}>
+            <i class="fas fa-times"></i> Отменить выделение
+        </button>
+        <button class="panel-button" on:click={deleteAllModels}>
+            <i class="fas fa-trash"></i> Удалить все модели
+        </button>
     </div>
 {/if}
 
@@ -221,6 +278,36 @@
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         grid-gap: 16px;
         overflow-y: auto;
+    }
+
+    .panel {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 10px;
+        width: 50%;
+        display: flex;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 10px;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .panel-button {
+        margin: 0 10px;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        font-family: Montserrat;
+        font-weight: 600;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .panel-button i {
+        margin-right: 5px;
     }
 
     @media (max-width: 480px) {

@@ -94,6 +94,49 @@
         sounds = sounds;
         isAddingSound = false;
     }
+
+    let isPanelVisible = false;
+
+    const downloadAllSounds = async () => {
+        const downloadPromises = selectedSoundsValue.map(async (sound) => {
+            const response = await fetch(`${apiURL}/sounds/${sound.id}/clip`);
+            const blob = await response.blob();
+            const downloadUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = downloadUrl;
+            link.download = `${sound.name}.ogg`;
+            link.click();
+            window.URL.revokeObjectURL(downloadUrl);
+        });
+
+        await Promise.all(downloadPromises);
+    };
+
+    const cancelSelection = () => {
+        selectedSoundsValue = [];
+        selectedSounds.set(selectedSoundsValue);
+    };
+
+    const deleteAllSounds = async () => {
+        const deletePromises = selectedSoundsValue.map(async (sound) => {
+            const response = await fetch(`${apiURL}/sounds/${sound.id}`, {
+                method: "DELETE",
+            });
+
+            if (!response.ok) {
+                console.error(`Error deleting sound with ID ${sound.id}`);
+            }
+        });
+
+        await Promise.all(deletePromises);
+        sounds = sounds.filter((sound) => !selectedSoundsValue.includes(sound));
+        selectedSoundsValue = [];
+        selectedSounds.set(selectedSoundsValue);
+    };
+
+    $: {
+        isPanelVisible = selectedSoundsValue.length > 0;
+    }
 </script>
 
 <svelte:head>
@@ -132,6 +175,19 @@
     </div>
 {/if}
 
+{#if isPanelVisible}
+    <div class="panel">
+        <button class="panel-button" on:click={downloadAllSounds}>
+            <i class="fas fa-download"></i> Скачать все звуки
+        </button>
+        <button class="panel-button" on:click={cancelSelection}>
+            <i class="fas fa-times"></i> Отменить выделение
+        </button>
+        <button class="panel-button" on:click={deleteAllSounds}>
+            <i class="fas fa-trash"></i> Удалить все звуки
+        </button>
+    </div>
+{/if}
 
 <AddSoundModal
     isOpen={isAddingSound}
@@ -160,6 +216,7 @@
         font-size: 1rem;
         cursor: pointer;
     }
+
     .no-sounds {
         display: flex;
         flex-direction: column;
@@ -170,6 +227,7 @@
         font-size: 1rem;
         color: #555;
     }
+
     .no-sounds i {
         margin-top: 10px;
         font-size: 2rem;
@@ -206,5 +264,35 @@
         background-color: #fff;
         border-radius: 20px;
         box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .panel {
+        position: fixed;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        border-radius: 10px;
+        width: 50%;
+        display: flex;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 10px;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .panel-button {
+        margin: 0 10px;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        font-family: Montserrat;
+        font-weight: 600;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .panel-button i {
+        margin-right: 5px;
     }
 </style>
