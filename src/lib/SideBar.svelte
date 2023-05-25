@@ -13,10 +13,10 @@
         </div>
     </a>
     <hr class="separator" />
-    <a href="/resourcepacks/models">3d модели</a>
-    <a href="/resourcepacks/sounds">Звуки</a>
+    <a href="/resources/models">3d модели</a>
+    <a href="/resources/sounds">Звуки</a>
     <hr class="separator" />
-    <a href="/maps">Карты</a>
+    <!-- <a href="/maps">Карты</a> -->
     <a href="/resourcepacks">Ресурспаки</a>
 </div>
 
